@@ -596,21 +596,21 @@
 
                 const imageActions = document.createElement('div');
                 imageActions.classList.add('image-actions');
-                imageActions.style.padding="15px";
+                imageActions.style.gap="25px";
 
                 const downloadButton = document.createElement('button');
                 downloadButton.style.width = "35px";
                 downloadButton.style.height = "35px";
                 downloadButton.style.background="none";
                 downloadButton.style.marginLeft = "-25px";
-                downloadButton.innerHTML = '<span style="font-size:20px margin-left:-15px" class="material-icons">download</span>';
+                downloadButton.innerHTML = '<span style="font-size:25px margin-left:-15px" class="material-icons">download</span>';
                 downloadButton.addEventListener('click', () => downloadImage(imgElement.src, image.key, image.encryptedData));
 
                 const deleteButton = document.createElement('button');
                 deleteButton.style.width = "35px";
                 deleteButton.style.height = "35px";
                 deleteButton.style.background="none";
-                deleteButton.innerHTML = '<span style="font-size:20px; margin-left:-5px; color:red" class="material-icons">delete</span>';
+                deleteButton.innerHTML = '<span style="font-size:25px; margin-left:-5px; color:red" class="material-icons">delete</span>';
                 deleteButton.addEventListener('click', () => deleteImage(image.id, image.storageIndex));
 
                 imageActions.appendChild(downloadButton);
