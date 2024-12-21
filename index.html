@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Photo Cloud</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin: 20px 0;
+            color: #0066ff;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            padding: 30px;
+            background-color: #000000;
+            border-radius: 12px;
+            /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); */
+            margin: 20px auto;
+            transition: box-shadow 0.3s ease;
+            /* border: 1px solid #444; */
+        }
+
+        .container:hover {
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .auth-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        .input-container label {
+            margin-bottom: 5px;
+            text-align: left;
+            font-size: 1rem;
+            color: #ddd;
+        }
+
+        .auth-container input {
+            margin: 5px 0;
+            padding: 12px;
+            
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+            width: 100%;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .auth-container input:focus {
+            outline: none;
+            border-color: #0066ff;
+        }
+
+        .auth-container button {
+            background-color: #0066ff;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 8px;
+            
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .auth-container button:hover {
+            background-color: #3570e0;
+            transform: scale(1.05);
+        }
+
+        #upload-container {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px dashed #0066ff;
+            padding: 20px;
+            background-color: #0066ff3e;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #upload-container:hover {
+            transform: scale(1.02);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #upload-label {
+            display: inline-flex;
+            align-items: center;
+            background-color: #0066ff00;
+            color: white;
+            padding: 12px 20px;
+            /*  */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1.3rem;
+            gap: 8px;
+        }
+
+        #upload-label:hover {
+            transform: scale(1.05);
+        }
+
+        #gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;  /* Horizontally center the items */
+    gap: 10px;
+    margin: 5px;
+    width: 100%;  /* Ensure the container takes up full width */
+    max-width: 100%;  /* Prevent it from overflowing */
+    box-sizing: border-box;  /* Ensure padding/margin doesn't affect the width */
+}
+
+.gallery-item {
+    width: 100px;  /* Adjust the width of the gallery items as needed */
+    height: 100px;  /* Adjust the height of the gallery items as needed */
+}
+
+
+        .gallery-item {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+        .gallery-item img:hover {
+            transform: scale(1.1);
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        #logout-button {
+            background-color: #ff000029;
+            color: rgb(255, 0, 0);
+            border: 1px red solid;
+            /* padding: 3px; */
+            margin: 10px;
+            
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute; right: 20px; top: 20px;
+            gap: 8px;
+        }
+
+        #logout-button:hover {
+            background-color: #e035354e;
+            transform: scale(1.05);
+        }
+
+        .loading {
+            text-align: center;
+            color: #0066ff;
+            margin-top: 20px;
+        }
+
+        html {
+    zoom: 1; /* This forces the content to stay zoomed out */
+}
+
+        @media (max-width: 600px) {
+
+            body{
+                margin-left: -32px;
+            }
+            .container {
+                width: 100%;
+                margin: 0 auto; /* Centers the container */
+
+            }
+            #gallery {
+        margin: 0 auto;  /* Center the gallery container */
+    }
+
+            .gallery-item {
+                width: 45%;
+                width: 100px;
+            height: 100px;
+            max-width: 100%;
+
+            }
+        }
+
+        .image-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+        }
+
+        .gallery-item:hover .image-actions {
+            opacity: 1;
+        }
+
+        .image-actions button {
+            background-color: #0066ff;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            margin: 0 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .image-actions button:hover {
+            background-color: #3570e0;
+            transform: scale(1.05);
+        }
+
+        #space-used {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1rem;
+            color: #ffffff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #2c2c2c00;
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #ffffff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .upload-animation {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-animation-content {
+            background-color: #2c2c2c00;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .upload-animation-icon {
+            font-size: 5em;
+            color: #0066ff;
+            animation: cloudUpload 1s linear infinite;
+        }
+
+        .upload-animation-text {
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        @keyframes cloudUpload {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0)
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="display: flex; ">
+        <h1 style="text-align: center;">Photo Cloud</h1>
+        <button id="logout-button" style="display: none;">
+            <span class="material-icons">logout</span>
+        </button>
+    </div>
+    
+   
+    <p id="space-used" style="display: none;">Space Used: 0 KB</p>
+    <div class="container">
+        <div class="auth-container" id="auth-section">
+            <div class="input-container">
+                <label for="email-input">Email</label>
+                <input type="email" placeholder="Your Email" id="email-input">
+            </div>
+            <div class="input-container">
+                <label for="password-input">Password</label>
+                <input type="password" placeholder="Your Password" id="password-input">
+            </div>
+
+            <div style="display: flex;">
+                <button id="login-button">
+                    <span class="material-icons">login</span> Login
+                </button>
+                <span>or</span>
+                <button id="signup-button">
+                    <span class="material-icons">person_add</span> Sign Up
+                </button>
+            </div>
+
+            <p class="error-message" id="auth-error"></p>
+        </div>
+        <div id="upload-container" style="display: none;">
+            <input type="file" id="file-input" accept="image/*">
+            <label for="file-input" id="upload-label">
+                <span class="material-icons">cloud_upload</span> Upload Photo
+            </label>
+            <p class="error-message" id="upload-error"></p>
+        </div>
+        <div id="gallery" style="display: none;">
+        </div>
+    </div>
+
+    <div class="modal" id="image-modal">
+        <div class="modal-content">
+            <span class="close" id="modal-close">&times;</span>
+            <img id="modal-image" src="" alt="Full Size Image">
+        </div>
+    </div>
+    <div class="loading" id="loading-message" style="display: none;">Loading...</div>
+
+    <div class="upload-animation" id="upload-animation">
+        <div class="upload-animation-content">
+            <span class="material-icons upload-animation-icon">cloud_upload</span>
+            <p class="upload-animation-text">Uploading...</p>
+        </div>
+    </div>
+
+    <script>
+        // Disable right-click for the whole page
+        document.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        // Firebase configurations for 5 projects, replace with your actual configurations
+        const firebaseConfigs = [{
+                apiKey: "AIzaSyDB_ylrW7hartjCjSAqjjZjUoNSrSX7Et4",
+                authDomain: "blogs-a7325.firebaseapp.com",
+                databaseURL: "https://blogs-a7325-default-rtdb.firebaseio.com",
+                projectId: "blogs-a7325",
+                storageBucket: "blogs-a7325.appspot.com",
+                messagingSenderId: "868013133674",
+                appId: "1:868013133674:web:8ceaa7dfa63ee0d2a0df13",
+                measurementId: "G-RJX09FKMMY"
+            },
+            {
+                apiKey: "AIzaSyCicMEb-Q3dHxmjX319nWEqjwCzjg--ZrE",
+                authDomain: "airstore-c4fce.firebaseapp.com",
+                databaseURL: "https://airstore-c4fce-default-rtdb.firebaseio.com",
+                projectId: "airstore-c4fce",
+                storageBucket: "airstore-c4fce.appspot.com",
+                messagingSenderId: "733213242091",
+                appId: "1:733213242091:web:9116b295e1776d3d8204ae",
+                measurementId: "G-BR4NXGHMP9"
+            },
+            {
+                apiKey: "AIzaSyCzo1-JRzMw7H2wd-ns6oYwIGgFcZHBOQA",
+                authDomain: "thenetworks-d338e.firebaseapp.com",
+                databaseURL: "https://thenetworks-d338e-default-rtdb.firebaseio.com",
+                projectId: "thenetworks-d338e",
+                storageBucket: "thenetworks-d338e.appspot.com",
+                messagingSenderId: "411720874279",
+                appId: "1:411720874279:web:0a6eaba6502e3e950d1102",
+                measurementId: "G-MZVRWSJ0SH"
+            },
+            {
+                apiKey: "AIzaSyDP98xM0H4cw38hJMy8S8jlfh4fDHRKuiE",
+                authDomain: "airdrive-x.firebaseapp.com",
+                projectId: "airdrive-x",
+                storageBucket: "airdrive-x.appspot.com",
+                messagingSenderId: "461429067685",
+                appId: "1:461429067685:web:85825b87e420d0dee9e24c",
+                measurementId: "G-SV9X7DLYQW"
+            },
+            {
+                apiKey: "AIzaSyA8hSMoS0eJwV95-150YLYa7-BiEBzQRE0",
+                authDomain: "airx-9a82d.firebaseapp.com",
+                projectId: "airx-9a82d",
+                storageBucket: "airx-9a82d.appspot.com",
+                messagingSenderId: "375800409271",
+                appId: "1:375800409271:web:2ab2fd39a257874eb87132",
+                measurementId: "G-0S0Z53KH4E"
+            },
+        ];
+
+        // Initialize Firebase apps with unique names
+        const firebaseApps = firebaseConfigs.map((config, index) => {
+            try {
+                return firebase.initializeApp(config, `app${index}`);
+            } catch (error) {
+                // If app already exists, get the existing instance
+                return firebase.app(`app${index}`);
+            }
+        });
+
+        // Get auth, storage, firestore instances for each app
+        const auths = firebaseApps.map(app => firebase.auth(app));
+        const storages = firebaseApps.map(app => firebase.storage(app));
+        const firestores = firebaseApps.map(app => firebase.firestore(app));
+
+        // Initialize global auth, storage and firestore to first instance
+        const auth = auths[0];
+        const storage = storages[0];
+        const firestore = firestores[0];
+
+        const authSection = document.getElementById('auth-section');
+        const uploadContainer = document.getElementById('upload-container');
+        const galleryDiv = document.getElementById('gallery');
+        const logoutButton = document.getElementById('logout-button');
+        const authErrorDisplay = document.getElementById('auth-error');
+        const uploadErrorDisplay = document.getElementById('upload-error');
+        const loadingMessage = document.getElementById('loading-message');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const loginButton = document.getElementById('login-button');
+        const signupButton = document.getElementById('signup-button');
+        const fileInput = document.getElementById('file-input');
+        const spaceUsedDisplay = document.getElementById('space-used');
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalClose = document.getElementById('modal-close');
+        const uploadAnimation = document.getElementById('upload-animation');
+
+        let currentStorageIndex = 0;
+        let totalSpaceUsed = 0;
+
+        // Function to show loading message
+        function showLoading() {
+            loadingMessage.style.display = 'block';
+        }
+
+        // Function to hide loading message
+        function hideLoading() {
+            loadingMessage.style.display = 'none';
+        }
+
+        // Function to show upload animation
+        function showUploadAnimation() {
+            uploadAnimation.style.display = 'flex';
+        }
+
+        // Function to hide upload animation
+        function hideUploadAnimation() {
+            uploadAnimation.style.display = 'none';
+        }
+
+        // Function to display error message
+        function displayError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 5000)
+        }
+
+        // Function to clear error messages
+        function clearErrors() {
+            authErrorDisplay.textContent = '';
+            uploadErrorDisplay.textContent = '';
+        }
+
+        // Function to display gallery images
+        async function displayGallery(photoCloud) {
+            galleryDiv.innerHTML = '';
+            if (photoCloud.length == 0) {
+                galleryDiv.innerHTML = '<p> No photos yet, upload some. </p>'
+                return;
+            }
+            for (const image of photoCloud) {
+                const galleryItem = document.createElement('div');
+                galleryItem.classList.add('gallery-item');
+                const imgElement = document.createElement('img');
+
+                try {
+                    const decryptedBlob = await decryptImage(image.encryptedData, image.key);
+                    imgElement.src = URL.createObjectURL(decryptedBlob);
+                    imgElement.alt = 'User uploaded photo';
+                    imgElement.style.cursor = 'pointer';
+                    imgElement.addEventListener('click', () => openModal(URL.createObjectURL(decryptedBlob)));
+                } catch (error) {
+                    console.error('Error decrypting image:', error);
+                    imgElement.src = image.url
+                    imgElement.alt = 'Error loading image';
+                }
+
+                const imageActions = document.createElement('div');
+                imageActions.classList.add('image-actions');
+
+                const downloadButton = document.createElement('button');
+                downloadButton.style.width = "30px";
+                downloadButton.style.height = "30px";
+                downloadButton.style.background="none";
+                downloadButton.style.marginLeft = "-25px";
+                downloadButton.innerHTML = '<span style="font-size:20px margin-left:-15px" class="material-icons">download</span>';
+                downloadButton.addEventListener('click', () => downloadImage(imgElement.src, image.key, image.encryptedData));
+
+                const deleteButton = document.createElement('button');
+                deleteButton.style.width = "30px";
+                deleteButton.style.height = "30px";
+                deleteButton.style.background="none";
+                deleteButton.innerHTML = '<span style="font-size:20px; margin-left:-5px; color:red" class="material-icons">delete</span>';
+                deleteButton.addEventListener('click', () => deleteImage(image.id, image.storageIndex));
+
+                imageActions.appendChild(downloadButton);
+                imageActions.appendChild(deleteButton);
+
+                galleryItem.appendChild(imgElement);
+                galleryItem.appendChild(imageActions);
+                galleryDiv.appendChild(galleryItem);
+            }
+
+            galleryDiv.style.display = 'flex';
+        }
+
+
+        // Function to open modal for full size image
+        function openModal(imageUrl) {
+            modalImage.src = imageUrl;
+            imageModal.style.display = 'block';
+        }
+
+        // Event listener for closing modal
+        modalClose.addEventListener('click', () => {
+            imageModal.style.display = 'none';
+        });
+
+        // Close modal if clicked outside
+        window.addEventListener('click', (event) => {
+            if (event.target === imageModal) {
+                imageModal.style.display = 'none';
+            }
+        });
+
+        // Function to download image
+        async function downloadImage(url, key, encryptedData) {
+             try {
+                   const decryptedBlob = await decryptImage(encryptedData, key);
+                   const link = document.createElement('a');
+                   link.href = URL.createObjectURL(decryptedBlob);
+                   link.download = url.substring(url.lastIndexOf('/') + 1);
+                   document.body.appendChild(link);
+                   link.click();
+                   document.body.removeChild(link);
+               } catch (error) {
+                  console.error('Error during image download:', error);
+                  displayError(authErrorDisplay, 'Error downloading the image.');
+              }
+         }
+
+
+        // Function to delete an image
+        async function deleteImage(imageId, storageIndex) {
+            showLoading();
+            try {
+                const dbRef = firestores[storageIndex].collection('photoCloud').doc(imageId);
+                const imageRef = await dbRef.get();
+                if (imageRef.exists) {
+                    const imageUrl = imageRef.data().url;
+                    const storageRef = storages[storageIndex].refFromURL(imageUrl);
+                    await storageRef.delete();
+                    await dbRef.delete();
+                    await fetchUserphotoCloud(auth.currentUser);
+                } else {
+                    displayError(authErrorDisplay, 'Error: Image not found')
+                }
+            } catch (error) {
+                displayError(authErrorDisplay, 'Error deleting image, Please try again')
+                console.error('Error deleting image:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+
+        // Function to handle authentication state changes
+        function handleAuthStateChange(user) {
+            clearErrors();
+            if (user) {
+                authSection.style.display = 'none';
+                uploadContainer.style.display = 'block';
+                logoutButton.style.display = 'block';
+                spaceUsedDisplay.style.display = 'block';
+                fetchUserphotoCloud(user);
+            } else {
+                authSection.style.display = 'flex';
+                uploadContainer.style.display = 'none';
+                galleryDiv.style.display = 'none';
+                logoutButton.style.display = 'none';
+                spaceUsedDisplay.style.display = 'none';
+            }
+            hideLoading();
+        }
+
+        // Function to fetch user's photoCloud data
+        async function fetchUserphotoCloud(user) {
+            showLoading();
+            totalSpaceUsed = 0;
+            const photoCloud = [];
+            try {
+                for (let i = 0; i < firestores.length; i++) {
+                    const photoCloudRef = await firestores[i].collection('photoCloud').where('userId', '==', user.uid).get();
+                    for (const doc of photoCloudRef.docs) {
+                        const data = doc.data();
+                        photoCloud.push({
+                            url: data.url,
+                            id: doc.id,
+                            key: data.key,
+                            storageIndex: i,
+                            encryptedData: data.encryptedData
+                        });
+                        const storageRef = storages[i].refFromURL(data.url);
+                        const meta = await storageRef.getMetadata();
+                        totalSpaceUsed += meta.size;
+                    }
+                }
+                displayGallery(photoCloud);
+                updateSpaceUsedDisplay();
+            } catch (error) {
+                displayError(authErrorDisplay, 'Error fetching photoCloud, Please Try Again')
+                console.error('Error fetching photoCloud:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to update the displayed space used
+        function updateSpaceUsedDisplay() {
+            const formattedSize = formatBytes(totalSpaceUsed);
+            spaceUsedDisplay.textContent = `Space Used: ${formattedSize}`;
+        }
+
+
+        // Function to format bytes to human-readable format
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Function to compress the image before upload
+        async function compressImage(imageFile) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxWidth = img.width * 0.4;
+                        const maxHeight = img.height * 0.4;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth
+                        }
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(blob => {
+                            if (blob) {
+                                resolve(blob);
+                            } else {
+                                reject('Canvas to blob failed');
+                            }
+                        }, 'image/jpeg', 0.8)
+                    }
+                    img.onerror = () => reject('Image loading error.');
+                };
+                reader.readAsDataURL(imageFile);
+            });
+        }
+        // Function to generate a user-specific encryption key
+        function generateEncryptionKey(userId) {
+            // Using a simple salt for demonstration, consider a more robust approach in production
+            const salt = "your_secure_salt"; // should be different for each app
+            const key = CryptoJS.SHA256(userId + salt).toString();
+            return key.substring(0, 32); // AES-256 requires a 32-byte key
+        }
+
+        // Function to encrypt image data
+        async function encryptImage(file, key) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async event => {
+                    try {
+                        const wordArray = CryptoJS.lib.WordArray.create(event.target.result);
+                        const encrypted = CryptoJS.AES.encrypt(wordArray, key).toString();
+                        resolve(encrypted);
+                    } catch (error) {
+                        reject(error);
+                    }
+
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file)
+            });
+        }
+
+
+        // Function to decrypt image data
+        async function decryptImage(encryptedData, key) {
+            try {
+                const decrypted = CryptoJS.AES.decrypt(encryptedData, key);
+                const byteArray = new Uint8Array(CryptoJS.enc.Hex.parse(decrypted.toString()).words.map(dw => {
+                    return [
+                        dw >>> 24 & 0xff,
+                        dw >>> 16 & 0xff,
+                        dw >>> 8 & 0xff,
+                        dw & 0xff
+                    ]
+                }).flat());
+                return new Blob([byteArray]);
+            } catch (error) {
+                console.error('Decryption Error', error);
+                throw new Error("Decryption failed");
+            }
+        }
+
+
+        // Function to upload the image
+        async function uploadImage(file) {
+            showUploadAnimation();
+            try {
+                const compressedImage = await compressImage(file);
+                const key = generateEncryptionKey(auth.currentUser.uid);
+                const encryptedData = await encryptImage(compressedImage, key);
+                const storageRef = storages[currentStorageIndex].ref('photoCloud/' + auth.currentUser.uid + '/' + Date.now() + '-' + file.name);
+                const snapshot = await storageRef.putString(encryptedData, 'base64');
+                const downloadURL = await snapshot.ref.getDownloadURL();
+
+                await firestores[currentStorageIndex].collection('photoCloud').add({
+                    url: downloadURL,
+                    userId: auth.currentUser.uid,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    key: key,
+                    encryptedData: encryptedData
+                });
+
+
+                currentStorageIndex = (currentStorageIndex + 1) % storages.length;
+                await fetchUserphotoCloud(auth.currentUser);
+            } catch (error) {
+                displayError(uploadErrorDisplay, 'Failed to upload image. Please try again.');
+                console.error('Error uploading image:', error);
+            } finally {
+                hideUploadAnimation();
+            }
+        }
+
+        // Event listener for file input change
+        fileInput.addEventListener('change', async function() {
+            clearErrors();
+            const file = this.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                displayError(uploadErrorDisplay, 'Please select an image file.');
+                this.value = '';
+                return;
+            }
+            await uploadImage(file);
+            this.value = '';
+        });
+
+        // Event listener for login button click
+        loginButton.addEventListener('click', async () => {
+            showLoading();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                displayError(authErrorDisplay, error.message)
+                console.error('Login error:', error);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Event listener for signup button click
+        signupButton.addEventListener('click', async () => {
+            showLoading();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+            } catch (error) {
+                displayError(authErrorDisplay, error.message)
+                console.error('Signup error:', error);
+            } finally {
+                hideLoading()
+            }
+        });
+
+        // Event listener for logout button click
+        logoutButton.addEventListener('click', async () => {
+            showLoading()
+            try {
+                await auth.signOut();
+            } catch (error) {
+                displayError(authErrorDisplay, 'Logout failed, Please Try again later');
+                console.error('Logout error:', error);
+            } finally {
+                hideLoading();
+            }
+        });
+
+
+        // Auth state change listener
+        auth.onAuthStateChanged(handleAuthStateChange);
+
+        // Initializing encryption and decryption keys
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for stored keys or generate them here during the auth state change
+        });
+    </script>
+</body>
+
+</html>
